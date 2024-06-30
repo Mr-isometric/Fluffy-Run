@@ -558,7 +558,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cc: {fileID: 970956825}
   _groundCheck: {fileID: 1911258076}
-  moveSpeed: 4
+  moveSpeed: 5
   gravity: -80
   JumpHeight: 5
   _SwipeVerticalThreshold: 150
