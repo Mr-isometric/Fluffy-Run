@@ -30,7 +30,7 @@ public class Player_Controller : MonoBehaviour
         {
             velocity.y = -2f;
         }
-
+        _move.z = 3f;
         if (Input.touchCount > 0)
         {
             Touch _touch = Input.GetTouch(0);
@@ -58,7 +58,7 @@ public class Player_Controller : MonoBehaviour
                 _move.x = 0f;
             }
         }
-
+        
         _cc.Move(_move * moveSpeed * Time.deltaTime);
 
         velocity.y += gravity * Time.deltaTime;
@@ -79,7 +79,6 @@ public class Player_Controller : MonoBehaviour
     private void SwipeDown()
     {
         float SwipeDistance = endTouchPosition.y - startTouchPosition.y;
-        Debug.Log(SwipeDistance);
         if (endTouchPosition.y < startTouchPosition.y && Mathf.Abs(SwipeDistance) > _SwipeVerticalThreshold)
         {         
             //Duck
@@ -90,7 +89,6 @@ public class Player_Controller : MonoBehaviour
     private void SwipeLeft()
     {
         float SwipeDistance = currentTouchPosition.x - startTouchPosition.y;
-        Debug.Log(SwipeDistance);
         if (currentTouchPosition.x > startTouchPosition.x && Mathf.Abs(SwipeDistance) > _SwipeHorizontalThreshold)
         {
             _move.x = 1f;
@@ -99,7 +97,6 @@ public class Player_Controller : MonoBehaviour
     private void SwipeRight()
     {
         float SwipeDistance = currentTouchPosition.x - startTouchPosition.y;
-        Debug.Log(SwipeDistance);
         if (currentTouchPosition.x < startTouchPosition.x && Mathf.Abs(SwipeDistance) > _SwipeHorizontalThreshold)
         {
             _move.x = -1f;
