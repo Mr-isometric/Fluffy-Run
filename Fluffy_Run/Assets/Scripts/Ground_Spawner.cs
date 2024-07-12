@@ -26,7 +26,6 @@ public class Ground_Spawner : MonoBehaviour
         if (_PlayerBack.position.z > transform.GetChild(0).GetChild(1).position.z)
         {
             //Delete Ground
-            Debug.Log(transform.GetChild(0).GetChild(1).position);
             Destroy(transform.GetChild(0).gameObject);
         }
     }
