@@ -13,10 +13,11 @@ public class Player_Controller : MonoBehaviour
     [SerializeField] private Vector3 Start_Touch_Position;
     [SerializeField] private Vector3 End_Touch_Position;
 
+    private float value;
     private void Update()
     {
         isGrounded = Physics.CheckSphere(_groundCheck.position, 0.2f, groundMask);
-        
+        SquashPlayerMove();
         //Reset Gravity on Ground
         if (isGrounded && Velocity.y < 0)
         {
@@ -110,5 +111,18 @@ public class Player_Controller : MonoBehaviour
     private bool SwipeCalculator(float StartPos, float EndPos, float SwipeThresHold)
     {
         return StartPos < EndPos && Mathf.Abs((StartPos - EndPos)) > SwipeThresHold;
+    }
+
+    private void SquashPlayerMove()
+    {
+        if (isGrounded)
+        {
+            value = +Time.deltaTime * 10f;
+            Debug.Log(Mathf.PingPong(value,1f));
+        }
+        else
+        {
+            Debug.Log("Dont Squash");
+        }
     }
 }
