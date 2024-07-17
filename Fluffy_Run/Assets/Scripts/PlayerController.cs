@@ -13,11 +13,15 @@ public class Player_Controller : MonoBehaviour
     [SerializeField] private Vector3 Start_Touch_Position;
     [SerializeField] private Vector3 End_Touch_Position;
 
-    private float value;
+    private float ScreenWidth;
+    private void Start()
+    {
+        ScreenWidth = Screen.width;
+    }
     private void Update()
     {
         isGrounded = Physics.CheckSphere(_groundCheck.position, 0.2f, groundMask);
-        SquashPlayerMove();
+
         //Reset Gravity on Ground
         if (isGrounded && Velocity.y < 0)
         {
@@ -45,8 +49,7 @@ public class Player_Controller : MonoBehaviour
             if (_touch.phase == TouchPhase.Ended)
             {
                 End_Touch_Position = _touch.position;
-                SwipeLeft();
-                SwipeRight();
+                SwipeHorizontal();
                 SwipeUp();
                 SwipeDown();
             }
@@ -55,27 +58,24 @@ public class Player_Controller : MonoBehaviour
         Velocity.y += gravity * Time.deltaTime;
         _cc.Move(Velocity * Time.deltaTime);
     }
-    private void SwipeLeft()
+    private void SwipeHorizontal()
     {
-        if (SwipeCalculator(End_Touch_Position.x, Start_Touch_Position.x, 300f))
+        float swipeDistance = SwipeDistance(Start_Touch_Position.x, End_Touch_Position.x);
+        float swipeDirection = SwipeDirection(Start_Touch_Position.x, End_Touch_Position.x);
+        float swipeThreshold = ScreenWidth/4f;
+        Debug.Log("SwipeThreshold: " + swipeThreshold.ToString() + "SwipeDistance: " + swipeDistance.ToString());
+        if (swipeDistance > swipeThreshold)
         {
-            Debug.Log("Left");
-            Vector3 move = Vector3.left * 2f;
+            Vector3 move = new Vector3(swipeDirection * SwipeAmount(swipeDistance,swipeThreshold+50f), 0f,0f);
             _cc.Move(move);
         }
     }
-    private void SwipeRight()
-    {
-        if (SwipeCalculator(Start_Touch_Position.x, End_Touch_Position.x, 300f))
-        {
-            Debug.Log("Right");
-            Vector3 move = Vector3.right * 2f;
-            _cc.Move(move);
-        }
-    }
+    
     private void SwipeUp()
     {
-        if (SwipeCalculator(Start_Touch_Position.y, End_Touch_Position.y, 300f) && isGrounded)
+        float swipeDistance = SwipeDistance(Start_Touch_Position.y, End_Touch_Position.y);
+        float swipeThreshold = 300f;
+        if (swipeDistance > swipeThreshold && isGrounded)
         {
             //Jump here
             Debug.Log("Jump");
@@ -85,14 +85,14 @@ public class Player_Controller : MonoBehaviour
     }
     private void SwipeDown()
     {
-        if (SwipeCalculator(End_Touch_Position.y, Start_Touch_Position.y, 300f))
+        if (SwipeDistance(End_Touch_Position.y, Start_Touch_Position.y) > 300f)
         {
             if (isGrounded)
             {
                 //Couch here
                 Debug.Log("Down");
                 transform.localScale = new Vector3(3f, 1.7f, 1.7f);
-                StartCoroutine(ResetCouchScale());
+                StartCoroutine(ResetCrouchScale());
             }
             else
             {
@@ -103,26 +103,24 @@ public class Player_Controller : MonoBehaviour
         }
         
     }
-    IEnumerator ResetCouchScale()
+    IEnumerator ResetCrouchScale()
     {
         yield return new WaitForSeconds(1f);
         transform.localScale = new Vector3(1.7f, 1.7f, 1.7f);
     }
-    private bool SwipeCalculator(float StartPos, float EndPos, float SwipeThresHold)
+
+    private float SwipeDistance(float StartPos, float EndPos)
     {
-        return StartPos < EndPos && Mathf.Abs((StartPos - EndPos)) > SwipeThresHold;
+        return Mathf.Abs(StartPos - EndPos);
+    }
+    private float SwipeDirection(float StartPos, float EndPos)
+    {
+        return StartPos < EndPos ? 1f : -1f;
+    }
+    private float SwipeAmount(float swipeDistance,float value1)
+    {
+        return swipeDistance < value1 ? 2f : 4f; 
     }
 
-    private void SquashPlayerMove()
-    {
-        if (isGrounded)
-        {
-            value = +Time.deltaTime * 10f;
-            Debug.Log(Mathf.PingPong(value,1f));
-        }
-        else
-        {
-            Debug.Log("Dont Squash");
-        }
-    }
+
 }
