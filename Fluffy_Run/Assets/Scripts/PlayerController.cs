@@ -13,10 +13,10 @@ public class Player_Controller : MonoBehaviour
     [SerializeField] private Vector3 Start_Touch_Position;
     [SerializeField] private Vector3 End_Touch_Position;
 
-    private float ScreenWidth;
+    private Camera _camera;
     private void Start()
     {
-        ScreenWidth = Screen.width;
+        _camera = Camera.main;
     }
     private void Update()
     {
@@ -36,7 +36,7 @@ public class Player_Controller : MonoBehaviour
 
             if (_touch.phase == TouchPhase.Began)
             {
-                Start_Touch_Position = _touch.position;
+                Start_Touch_Position = _camera.ScreenToWorldPoint(new Vector3(_touch.position.x, _touch.position.y, 100f));
             }
             if (_touch.phase == TouchPhase.Moved)
             {
@@ -44,12 +44,14 @@ public class Player_Controller : MonoBehaviour
             }
             if (_touch.phase == TouchPhase.Stationary)
             {
-
+                
             }
             if (_touch.phase == TouchPhase.Ended)
             {
-                End_Touch_Position = _touch.position;
-                SwipeHorizontal();
+                End_Touch_Position = _camera.ScreenToWorldPoint(new Vector3(_touch.position.x, _touch.position.y, 100f));
+
+                SwipeLeft();
+                SwipeRight();
                 SwipeUp();
                 SwipeDown();
             }
@@ -58,24 +60,34 @@ public class Player_Controller : MonoBehaviour
         Velocity.y += gravity * Time.deltaTime;
         _cc.Move(Velocity * Time.deltaTime);
     }
-    private void SwipeHorizontal()
+
+    private void SwipeLeft()
     {
-        float swipeDistance = SwipeDistance(Start_Touch_Position.x, End_Touch_Position.x);
-        float swipeDirection = SwipeDirection(Start_Touch_Position.x, End_Touch_Position.x);
-        float swipeThreshold = ScreenWidth/4f;
-        Debug.Log("SwipeThreshold: " + swipeThreshold.ToString() + "SwipeDistance: " + swipeDistance.ToString());
-        if (swipeDistance > swipeThreshold)
+        float swipeDistance = SwipeDistance(End_Touch_Position.x, Start_Touch_Position.x);
+        float swipeThreshold = 10f;
+        Debug.Log("SwipeDistance = "+swipeDistance.ToString());
+        if (isSwipeDirection(End_Touch_Position.x, Start_Touch_Position.x) && swipeDistance > swipeThreshold)
         {
-            Vector3 move = new Vector3(swipeDirection * SwipeAmount(swipeDistance,swipeThreshold+50f), 0f,0f);
+            Vector3 move = Vector3.left * SwipeAmount(swipeDistance,25f);
             _cc.Move(move);
         }
     }
-    
+    private void SwipeRight()
+    {
+        float swipeDistance = SwipeDistance(Start_Touch_Position.x, End_Touch_Position.x);
+        float swipeThreshold = 10f;
+        Debug.Log("SwipeDistance = " + swipeDistance.ToString());
+        if (isSwipeDirection(Start_Touch_Position.x, End_Touch_Position.x) && swipeDistance > swipeThreshold)
+        {
+            Vector3 move = Vector3.right * SwipeAmount(swipeDistance, 25f);
+            _cc.Move(move);
+        }
+    }
     private void SwipeUp()
     {
         float swipeDistance = SwipeDistance(Start_Touch_Position.y, End_Touch_Position.y);
         float swipeThreshold = 300f;
-        if (swipeDistance > swipeThreshold && isGrounded)
+        if (isSwipeDirection(Start_Touch_Position.y, End_Touch_Position.y) && swipeDistance > swipeThreshold && isGrounded)
         {
             //Jump here
             Debug.Log("Jump");
@@ -85,7 +97,9 @@ public class Player_Controller : MonoBehaviour
     }
     private void SwipeDown()
     {
-        if (SwipeDistance(End_Touch_Position.y, Start_Touch_Position.y) > 300f)
+        float swipeDistance = SwipeDistance(End_Touch_Position.y, Start_Touch_Position.y);
+        float swipeThreshold = 300f;
+        if (isSwipeDirection(End_Touch_Position.y,Start_Touch_Position.y) && swipeDistance > swipeThreshold)
         {
             if (isGrounded)
             {
@@ -116,6 +130,10 @@ public class Player_Controller : MonoBehaviour
     private float SwipeDirection(float StartPos, float EndPos)
     {
         return StartPos < EndPos ? 1f : -1f;
+    }
+    private bool isSwipeDirection(float StartPos, float EndPos)
+    {
+        return StartPos < EndPos;
     }
     private float SwipeAmount(float swipeDistance,float value1)
     {
