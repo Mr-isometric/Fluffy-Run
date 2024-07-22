@@ -3,4 +3,6 @@ using UnityEngine;
 public class DataHolder_SO : ScriptableObject
 {
     public float PlayerMoveSpeed;
+    public float PlayerScore;
+    public bool isPlayerAlive;
 }

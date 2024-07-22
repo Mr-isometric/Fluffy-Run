@@ -23,7 +23,7 @@ public class Ground_Spawner : MonoBehaviour
             //Spawn Ground
             SpawnGround();
         }
-        if (_PlayerBack.position.z > transform.GetChild(0).GetChild(1).position.z)
+        if (_PlayerBack.position.z > transform.GetChild(0).GetChild(0).GetChild(1).position.z)
         {
             //Delete Ground
             Destroy(transform.GetChild(0).gameObject);
@@ -33,7 +33,7 @@ public class Ground_Spawner : MonoBehaviour
     private void SpawnGround()
     {
         CurrentGround = Instantiate(_groundPrefab, CurrentGround.position + new Vector3(0f,0f,50f), Quaternion.identity,transform).transform;
-        _GroundFront = CurrentGround.GetChild(0);
-        _GroundBack = CurrentGround.GetChild(1);
+        _GroundFront = CurrentGround.GetChild(0).GetChild(0);
+        _GroundBack = CurrentGround.GetChild(0).GetChild(1);
     }
 }

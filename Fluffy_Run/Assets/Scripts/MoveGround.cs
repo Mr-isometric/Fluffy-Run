@@ -14,16 +14,18 @@ public class MoveGround : MonoBehaviour
     private void Update()
     {
         SpeedIncreaseTimeHandler();
-        MoveTheGround();
-        
+        MoveTheGround();       
     }
     private void SpeedIncreaseTimeHandler()
     {
-        Speed_Increase_Timer -= Time.deltaTime;
-        if (Speed_Increase_Timer < 0f)
+        if (dataHolder_SO.PlayerMoveSpeed < 54f)
         {
-            Speed_Increase_Timer = 6f;
-            dataHolder_SO.PlayerMoveSpeed += 4f;
+            Speed_Increase_Timer -= Time.deltaTime;
+            if (Speed_Increase_Timer < 0f)
+            {
+                Speed_Increase_Timer = 6f;
+                dataHolder_SO.PlayerMoveSpeed += 4f;
+            }
         }
     }
     private void MoveTheGround()

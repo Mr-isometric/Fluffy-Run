@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: DataHolder_1
   m_EditorClassIdentifier: 
   PlayerMoveSpeed: 10
+  PlayerScore: 0
+  isPlayerAlive: 1

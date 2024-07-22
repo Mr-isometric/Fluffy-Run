@@ -12,14 +12,17 @@ public class Player_Controller : MonoBehaviour
     [SerializeField] private Vector3 Velocity;
     [SerializeField] private Vector3 Start_Touch_Position;
     [SerializeField] private Vector3 End_Touch_Position;
+    [SerializeField] private DataHolder_SO dataHolder;
 
     private Camera _camera;
     private void Start()
     {
         _camera = Camera.main;
     }
+    
     private void Update()
     {
+        if (!dataHolder.isPlayerAlive) return;
         isGrounded = Physics.CheckSphere(_groundCheck.position, 0.2f, groundMask);
 
         //Reset Gravity on Ground
@@ -58,39 +61,36 @@ public class Player_Controller : MonoBehaviour
         }
 
         Velocity.y += gravity * Time.deltaTime;
-        _cc.Move(Velocity * Time.deltaTime);
+        _cc.Move(Velocity * Time.deltaTime);       
     }
 
     private void SwipeLeft()
     {
         float swipeDistance = SwipeDistance(End_Touch_Position.x, Start_Touch_Position.x);
-        float swipeThreshold = 10f;
-        Debug.Log("SwipeDistance = "+swipeDistance.ToString());
+        float swipeThreshold = 5f;
         if (isSwipeDirection(End_Touch_Position.x, Start_Touch_Position.x) && swipeDistance > swipeThreshold)
         {
-            Vector3 move = Vector3.left * SwipeAmount(swipeDistance,25f);
+            Vector3 move = Vector3.left * SwipeAmount(swipeDistance,12f);
             _cc.Move(move);
         }
     }
     private void SwipeRight()
     {
         float swipeDistance = SwipeDistance(Start_Touch_Position.x, End_Touch_Position.x);
-        float swipeThreshold = 10f;
-        Debug.Log("SwipeDistance = " + swipeDistance.ToString());
+        float swipeThreshold = 5f;
         if (isSwipeDirection(Start_Touch_Position.x, End_Touch_Position.x) && swipeDistance > swipeThreshold)
         {
-            Vector3 move = Vector3.right * SwipeAmount(swipeDistance, 25f);
-            _cc.Move(move);
+            Vector3 move = Vector3.right * SwipeAmount(swipeDistance, 12f);
+            _cc.Move(move);         
         }
     }
     private void SwipeUp()
     {
         float swipeDistance = SwipeDistance(Start_Touch_Position.y, End_Touch_Position.y);
-        float swipeThreshold = 300f;
+        float swipeThreshold = 5f;
         if (isSwipeDirection(Start_Touch_Position.y, End_Touch_Position.y) && swipeDistance > swipeThreshold && isGrounded)
         {
             //Jump here
-            Debug.Log("Jump");
             Velocity.y = Mathf.Sqrt(2f * -gravity * JumpHeight);
             _cc.Move(Velocity * Time.deltaTime);
         }
@@ -98,24 +98,21 @@ public class Player_Controller : MonoBehaviour
     private void SwipeDown()
     {
         float swipeDistance = SwipeDistance(End_Touch_Position.y, Start_Touch_Position.y);
-        float swipeThreshold = 300f;
+        float swipeThreshold = 5f;
         if (isSwipeDirection(End_Touch_Position.y,Start_Touch_Position.y) && swipeDistance > swipeThreshold)
         {
             if (isGrounded)
             {
                 //Couch here
-                Debug.Log("Down");
                 transform.localScale = new Vector3(3f, 1.7f, 1.7f);
                 StartCoroutine(ResetCrouchScale());
             }
             else
             {
-                Debug.Log("ToGround");
                 Vector3 move = Vector3.down * 4f;
                 _cc.Move(move);
             }
         }
-        
     }
     IEnumerator ResetCrouchScale()
     {
